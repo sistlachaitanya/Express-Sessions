@@ -4,27 +4,24 @@ const users = require("./routes/user.js");
 const posts = require("./routes/posts.js");
 const session = require("express-session");
 
-app.use(
-  session({
-    secret: "mysupersecretcode",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+const sessionOptions = {
+  secret: "mysupersecretcode",
+  resave: false,
+  saveUninitialized: true,
+};
 
-app.get("/count", (req, res) => {
-  if (req.session.count) {
-    req.session.count++;
-  } else {
-    req.session.count = 1;
-  }
+app.use(session(sessionOptions));
 
-  res.send(`You sent request ${req.session.count} times`);
+app.get("/register", (req, res) => {
+  let { name = "anonymous" } = req.query;
+  req.session.name = name;
+  console.log(req.session);
+  res.redirect("/hello");
 });
 
-// app.get("/test", (req, res) => {
-//   res.send("test successful!");
-// });
+app.get("/hello", (req, res) => {
+  res.send(`hello ${req.session.name}`);
+});
 
 app.listen(3000, () => {
   console.log("server listening to 3000");
